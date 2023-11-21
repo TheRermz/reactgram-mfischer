@@ -17,7 +17,7 @@ const register = async (req, res) => {
   // check if user exists
   const user = await User.findOne({ email });
   if (user) {
-    res.status(422).json({ error: "Email já cadastrado" });
+    res.status(422).json({ errors: "Email já cadastrado" });
     return;
   }
   // generate pwd hash
@@ -33,7 +33,7 @@ const register = async (req, res) => {
   });
   //if user was created, generate token
   if (!newUser) {
-    res.status(422).json({ error: "Erro ao cadastrar usuário" });
+    res.status(422).json({ errors: "Erro ao cadastrar usuário" });
     return;
   }
   res.status(201).json({ _id: newUser._id, token: generateToken(newUser._id) });
@@ -44,12 +44,12 @@ const login = async (req, res) => {
   const user = await User.findOne({ email });
   //check if user exists
   if (!user) {
-    res.status(404).json({ error: "Usuário não encontrado" });
+    res.status(404).json({ errors: "Usuário não encontrado" });
     return;
   }
   // check if pwd matches
   if (!(await bcrypt.compare(password, user.password))) {
-    res.status(422).json({ error: "Senha incorreta" });
+    res.status(422).json({ errors: "Senha incorreta" });
     return;
   }
   res.status(201).json({
@@ -107,12 +107,12 @@ const getUserById = async (req, res) => {
   try {
     const user = await User.findById(id).select("-password");
     if (!user) {
-      res.status(404).json({ error: "Usuário não encontrado" });
+      res.status(404).json({ errors: "Usuário não encontrado" });
       return;
     }
     res.status(200).json(user);
-  } catch (error) {
-    res.status(422).json({ error: "Usuário não encontrado" });
+  } catch (errors) {
+    res.status(422).json({ errors: "Usuário não encontrado" });
   }
   //check if user exists
 };
